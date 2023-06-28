@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model # будет в user/models.py
+from django.contrib.auth import get_user_model  # будет в user/models.py
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -6,7 +6,7 @@ from rest_framework.validators import ValidationError
 
 from api.validators import validate_email, validate_username
 
-User = get_user_model() #  будет переопределено в user/models.py
+User = get_user_model()  # будет переопределено в user/models.py
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -21,7 +21,6 @@ class SignUpSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('username', 'email', )
         model = User
-
 
 
 class TokenSerializer(serializers.ModelSerializer):
