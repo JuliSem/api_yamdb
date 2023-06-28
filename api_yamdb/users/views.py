@@ -1,6 +1,6 @@
 # всё пойдет в api/views.py
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -17,8 +17,11 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = CustomUserSerializer
     permission_classes = (IsAdminUser, )
     pagination_class = LimitOffsetPagination
+    lookup_field = 'username'
+    filter_backends = (filters.SearchFilter)
+    search_fields = ('username', )
 
-    @action(methods=['get', 'patch'], detail=False,
+    @action(methods=['GET', 'PATCH'], detail=False,
             permission_classes=(IsAuthenticated, IsAuthorOnly))
     def me(self, request):
         user = get_object_or_404(User, username=self.request.user.username)
