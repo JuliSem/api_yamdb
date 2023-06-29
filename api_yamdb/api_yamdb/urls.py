@@ -15,7 +15,7 @@ auth_patterns = [
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('v1/auth/', include(auth_patterns)),
+    path('api/v1/auth/', include(auth_patterns)),
     path('api/v1/', include(router.urls)),
     path('redoc/',
          TemplateView.as_view(template_name='redoc.html'),

@@ -21,10 +21,10 @@ def signup(request):
     """Создание пользователя и отправка кода подтверждения."""
     serializer = SignUpSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    if not User.objects.filter(username=request.data['usernsme'],
+    if not User.objects.filter(username=request.data['username'],
                                email=request.data['email']):
         serializer.save()
-    user = User.objects.get(username=request.data['usernsme'],
+    user = User.objects.get(username=request.data['username'],
                             email=request.data['email'])
     confirmation_code = default_token_generator.make_token(user)
     send_mail('Подтверждение регистрации на сайте Yamdb!',

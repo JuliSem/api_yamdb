@@ -113,7 +113,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),   
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
 }
 
 DEFAULT_FROM_EMAIL = 'from@example.com'
