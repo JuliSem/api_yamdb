@@ -17,3 +17,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email', 'first_name',
                   'last_name', 'bio', 'role')
         model = User
+
+
+class ProfileEditSerializer(CustomUserSerializer):
+    role = serializers.CharField(read_only=True)
