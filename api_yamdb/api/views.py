@@ -6,11 +6,14 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
 
-from api.serializers import SignUpSerializer, TokenSerializer
+from api.serializers import (SignUpSerializer, TokenSerializer,
+                             ReviewSerializer, CommentSerializer)
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
-
+from reviews.models import Title, Review
+from users.permissions import IsAuthorModeratorAdminOrReadOnly
 
 User = get_user_model()  # будет переопределено в user/models.py
 
@@ -51,3 +54,43 @@ def token(request):
         respone = {'token': str(token)}
         return Response(respone, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReviewViewSet(ModelViewSet):
+    """Для работы с отзывами."""
+    serializer_class = ReviewSerializer
+    permission_classes = [
+        IsAuthorModeratorAdminOrReadOnly,
+    ]
+
+    def get_queryset(self):
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        reviews = title.reviews.all()
+        return reviews
+
+    def perform_create(self, serializer):
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
+
+
+class CommentViewSet(ModelViewSet):
+    """Для работы с комментами."""
+    serializer_class = CommentSerializer
+    permission_classes = [
+        IsAuthorModeratorAdminOrReadOnly,
+    ]
+
+    def perform_create(self, serializer):
+        title__id = self.kwargs.get('title_id')
+        review_id = self.kwargs.get('review_id')
+
+        review = get_object_or_404(Review, title__id=title__id,
+                                   review_id=review_id)
+        serializer.save(author=self.request.user, review=review)
+
+    def get_queryset(self):
+        title__id = self.kwargs.get('title_id')
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, title__id=title__id,
+                                   review_id=review_id)
+        return review.comments.all()

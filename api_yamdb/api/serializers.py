@@ -5,6 +5,7 @@ from rest_framework import serializers
 from rest_framework.validators import ValidationError
 
 from api.validators import validate_email, validate_username
+from reviews.models import Review, Comment
 
 User = get_user_model()  # будет переопределено в user/models.py
 
@@ -40,3 +41,36 @@ class TokenSerializer(serializers.ModelSerializer):
             if str(confirmation_code) != data['confirmation_code']:
                 raise ValidationError('Введен неверный код подтверждения!')
             return data
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """Сериалайзер для отзывы."""
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True
+    )
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        model = Review
+
+    def validate(self, data):
+        user = self.context['request'].user
+        request = self.context['request']
+        title_id = request.parser_context['kwargs']['title_id']
+
+        if Review.objects.filter(author=user, title__id=title_id).exists():
+            raise serializers.ValidationError(
+                'Вы уже оставили отзыв на данное произведение'
+            )
+        return data
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Сериалайзер для коммента."""
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True
+    )
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'pub_date',)
+        model = Comment
