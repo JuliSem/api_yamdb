@@ -22,6 +22,9 @@ class User(AbstractUser):
     last_name = models.CharField(verbose_name='Фамилия',
                                  max_length=150,
                                  blank=True)
+    email = models.EmailFiled(verbose_name='Электронная почта',
+                              max_length=254,
+                              unique=True)
     bio = models.TextField(verbose_name='Биография',
                            blank=True)
     role = models.CharField(verbose_name='Пользовательская роль',
