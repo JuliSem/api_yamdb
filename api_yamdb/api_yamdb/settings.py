@@ -118,3 +118,5 @@ SIMPLE_JWT = {
 }
 
 DEFAULT_FROM_EMAIL = 'from@example.com'
+
+AUTH_USER_MODEL = 'users.User'
