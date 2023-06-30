@@ -1,10 +1,12 @@
+from datetime import timedelta
+from django.core.management.utils import get_random_secret_key
 from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
+SECRET_KEY = get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -21,7 +23,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users', # удалить, если модель User будет в reviews
+    'rest_framework_simplejwt',
+    'api',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -102,11 +106,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-}
-
-# AUTH_USER_MODEL = 'reviews.User' если модель User будет в прилож. reviews
