@@ -1,18 +1,47 @@
-from django.contrib.auth import get_user_model  # будет в  user/models.py
+from django.db import IntegrityError
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-from api.serializers import SignUpSerializer, TokenSerializer
+from api.permissions import (IsAdmin,)
+from api.serializers import (CustomUserSerializer,
+                             ProfileEditSerializer,
+                             SignUpSerializer,
+                             TokenSerializer)
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
+from users.models import User
 
 
-User = get_user_model()  # будет переопределено в user/models.py
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = (IsAdmin, )
+    lookup_field = 'username'
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('username', )
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    @action(methods=['GET', 'PATCH'], detail=False,
+            permission_classes=(IsAuthenticated, ))
+    def me(self, request):
+        user = get_object_or_404(User, username=self.request.user.username)
+        if request.method == 'PATCH':
+            serializer = ProfileEditSerializer(request.user,
+                                               data=request.data,
+                                               partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+        serializer = CustomUserSerializer(user)
+        return Response(serializer.data)
 
 
 @api_view(['POST'])
@@ -21,27 +50,26 @@ def signup(request):
     """Создание пользователя и отправка кода подтверждения."""
     serializer = SignUpSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    if not User.objects.filter(username=request.data['username'],
-                               email=request.data['email']):
-        serializer.save()
-    user = User.objects.get(username=request.data['username'],
-                            email=request.data['email'])
+    try:
+        user, _ = User.objects.get_or_create(username=request.data['username'],
+                                             email=request.data['email'])
+    except IntegrityError:
+        raise ValidationError('Неверное сочетание имени пользователя и email')
     confirmation_code = default_token_generator.make_token(user)
     send_mail('Подтверждение регистрации на сайте Yamdb!',
               f'Ваш код: {confirmation_code} для подтверждения регистрации',
               DEFAULT_FROM_EMAIL,
-              [user.email]
-              )
-    return Response(
-        {'result': 'Код подтверждения успешно отправлен!'},
-        status=status.HTTP_200_OK
-    )
+              [user.email],
+              fail_silently=False)
+    return Response({'email': user.email,
+                     'username': user.username},
+                    status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def token(request):
-    """Получение и отправка токена."""
+    """Получение токена."""
     serializer = TokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = get_object_or_404(User, username=request.data['username'])

@@ -1,6 +1,7 @@
-# под вопросом всё переместится в reviews/models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+from api.validators import validate_username
 
 
 class User(AbstractUser):
@@ -14,6 +15,7 @@ class User(AbstractUser):
         (MODERATOR, 'Модератор')
     )
     username = models.CharField(verbose_name='Пользователь',
+                                validators=(validate_username,),
                                 max_length=150,
                                 unique=True)
     first_name = models.CharField(verbose_name='Имя',
@@ -22,7 +24,7 @@ class User(AbstractUser):
     last_name = models.CharField(verbose_name='Фамилия',
                                  max_length=150,
                                  blank=True)
-    email = models.EmailFiled(verbose_name='Электронная почта',
+    email = models.EmailField(verbose_name='Электронная почта',
                               max_length=254,
                               unique=True)
     bio = models.TextField(verbose_name='Биография',
@@ -36,6 +38,7 @@ class User(AbstractUser):
         ordering = ['id']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
 
     def __str__(self):
         return self.username

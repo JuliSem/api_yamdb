@@ -3,10 +3,10 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 
-from api.views import signup, token
+from api.views import signup, token, UserViewSet
 
 router = DefaultRouter()
-# router.register(r'users', UserViewSet)
+router.register(r'users', UserViewSet)
 
 auth_patterns = [
     path('signup/', signup, name='signup'),
