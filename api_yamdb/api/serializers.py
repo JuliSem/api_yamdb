@@ -4,12 +4,13 @@ from rest_framework import serializers
 from rest_framework.validators import ValidationError
 from datetime import datetime
 
-from api.validators import validate_username
+from .validators import validate_username
 from users.models import User
 from reviews.models import Category, Genre, Title
 
 
 class SignUpSerializer(serializers.Serializer):
+    """Serializer для регистрации пользователя."""
 
     username = serializers.CharField(max_length=150,
                                      required=True,
@@ -19,6 +20,7 @@ class SignUpSerializer(serializers.Serializer):
 
 
 class TokenSerializer(serializers.Serializer):
+    """Serializer для получения токена."""
 
     username = serializers.CharField(max_length=150,
                                      required=True,
@@ -34,6 +36,7 @@ class TokenSerializer(serializers.Serializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    """Serializer для модели пользователя."""
 
     class Meta:
         fields = ('username', 'email', 'first_name',
@@ -42,6 +45,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class ProfileEditSerializer(CustomUserSerializer):
+    """Serializer для редактирования данных пользователя."""
     role = serializers.CharField(read_only=True)
 
 

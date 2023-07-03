@@ -5,6 +5,7 @@ from api.validators import validate_username
 
 
 class User(AbstractUser):
+    """Модель пользователя."""
     USER = 'user'
     ADMIN = 'admin'
     MODERATOR = 'moderator'
@@ -38,7 +39,6 @@ class User(AbstractUser):
         ordering = ['id']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-
 
     def __str__(self):
         return self.username

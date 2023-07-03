@@ -1,6 +1,6 @@
-from django.db import IntegrityError
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
@@ -25,6 +25,7 @@ from reviews.models import Category, Genre, Title
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """Viewset для пользователя."""
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (IsAdmin, )
@@ -53,7 +54,7 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup(request):
-    """Создание пользователя и отправка кода подтверждения."""
+    """Регистрация пользователя и отправка кода подтверждения."""
     serializer = SignUpSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     try:
