@@ -10,12 +10,18 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
 from api.permissions import (IsAdmin,)
-from api.serializers import (CustomUserSerializer,
-                             ProfileEditSerializer,
-                             SignUpSerializer,
-                             TokenSerializer)
+from api.serializers import (
+    CustomUserSerializer,
+    ProfileEditSerializer,
+    SignUpSerializer,
+    TokenSerializer,      
+    CategorySerializer,
+    GenreSerializer,
+    TitleSerializer
+)
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 from users.models import User
+from reviews.models import Category, Genre, Title
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -79,3 +85,23 @@ def token(request):
         respone = {'token': str(token)}
         return Response(respone, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    """Вьюсет для создания обьектов "Категории"."""
+
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    """Вьюсет для создания обьектов "Жанры"."""
+
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    """Вьюсет для создания обьектов "Произведения"."""
+    serializer_class = TitleSerializer
+    queryset = Title.objects.all()
