@@ -1,15 +1,15 @@
 from rest_framework import permissions
 
 
-# для класса User
 class IsAdmin(permissions.BasePermission):
+    """Permission для класса User."""
     def has_permission(self, request, view):
         return (request.user.is_authenticated
                 and (request.user.is_admin or request.user.is_superuser))
 
 
-# для класса Category, Genre, Title
 class IsAdminOrReadOnly(permissions.BasePermission):
+    """Permission для классов: Category, Genre, Title."""
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS
                 or (request.user.is_authenticated
@@ -17,8 +17,8 @@ class IsAdminOrReadOnly(permissions.BasePermission):
                          or request.user.is_superuser)))
 
 
-# для класса Review, Comments
 class IsAuthorModeratorAdminOrReadOnly(permissions.BasePermission):
+    """Permission для классов: Review, Comments."""
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS
                 or request.user.is_authenticated)
