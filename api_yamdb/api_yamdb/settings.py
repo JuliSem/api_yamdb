@@ -1,3 +1,5 @@
+import os
+
 from datetime import timedelta
 from django.core.management.utils import get_random_secret_key
 from pathlib import Path
@@ -108,6 +110,10 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 DEFAULT_FROM_EMAIL = 'from@example.com'
 
