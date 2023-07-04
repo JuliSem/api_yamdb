@@ -29,8 +29,8 @@ class TokenSerializer(serializers.Serializer):
 
     def validate(self, data):
         user = get_object_or_404(User, username=data['username'])
-        confirmation_code = default_token_generator.make_token(user)
-        if str(confirmation_code) != data['confirmation_code']:
+        confirmation_code = data['confirmation_code']
+        if not default_token_generator.check_token(user, confirmation_code):
             raise ValidationError('Введен неверный код подтверждения!')
         return data
 
