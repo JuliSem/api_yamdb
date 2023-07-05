@@ -65,7 +65,7 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug')
 
 
-class TitleSerializer(serializers.ModelSerializer):
+class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     """Сериализатор для модели "Произведения"."""
 
     genre = GenreSerializer(many=True, read_only=True)
@@ -77,6 +77,24 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
         )
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов класса Title при небезопасных запросах."""
+
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects.all(),
+        many=True
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all()
+    )
+
+    class Meta:
+        model = Title
+        fields = '__all__'
 
     def validate_year(self, value):
         if value > int(datetime.now().year):
