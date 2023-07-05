@@ -1,22 +1,37 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from rest_framework import routers
 
-from api.views import ReviewViewSet, CommentViewSet
+from .views import (
+    CategoryViewSet,
+    GenreViewSet,
+    TitleViewSet,
+    UserViewSet,
+    signup,
+    token,
+    ReviewViewSet, CommentViewSet)
 
-# Следуем рекомендациям наставников, создаем отдельный роутер для каждой
-# версии.
-v1_router = DefaultRouter()
-v1_router.register(
+auth_patterns = [
+    path('signup/', signup, name='signup'),
+    path('token/', token, name='token')
+]
+
+router = routers.DefaultRouter()
+router.register('categories', CategoryViewSet, basename='categories')
+router.register('genres', GenreViewSet, basename='genres')
+router.register('titles', TitleViewSet, basename='titles')
+router.register('users', UserViewSet, basename='users')
+router.register(
     r'titles/(?P<title_id>\d+)/reviews',
     ReviewViewSet,
     basename='reviews'
 )
-v1_router.register(
+router.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
     CommentViewSet,
     basename='comments'
 )
 
 urlpatterns = [
-    path('', include(v1_router.urls))
+    path('auth/', include(auth_patterns)),
+    path('', include(router.urls))
 ]

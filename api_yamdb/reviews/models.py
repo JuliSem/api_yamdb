@@ -1,95 +1,82 @@
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.core.validators import (RegexValidator, MinValueValidator,
+                                    MaxValueValidator)
 from django.conf import settings
-from .validators import validate_year
 
 
 class Category(models.Model):
-    """Категория."""
+    """Категории."""
+
     name = models.CharField(
-        verbose_name='Наименование',
-        max_length=254,
+        max_length=256,
+        verbose_name="Название"
     )
     slug = models.SlugField(
-        verbose_name='URL slug',
-        unique=True,
         max_length=50,
+        unique=True,
+        validators=[RegexValidator(
+            regex=r'^[-a-zA-Z0-9_]+$',
+            message='В слаге категории указан недопустимый символ'
+        )]
     )
-
-    class Meta:
-        verbose_name = 'Категория'
-        verbose_name_plural = 'Категории'
-
-    def __str__(self):
-        return self.name
 
 
 class Genre(models.Model):
-    """Жанр"""
+    """Жанры."""
+
     name = models.CharField(
-        verbose_name='Наименование',
-        max_length=254,
+        max_length=256,
+        verbose_name="Название"
     )
     slug = models.SlugField(
-        verbose_name='URL slug',
-        unique=True,
         max_length=50,
+        unique=True,
+        validators=[RegexValidator(
+            regex=r'^[-a-zA-Z0-9_]+$',
+            message='В слаге жанра указан недопустимый символ'
+        )]
     )
-
-    class Meta:
-        verbose_name = 'Жанр'
-        verbose_name_plural = 'Жанры'
-
-    def __str__(self):
-        return self.name
 
 
 class Title(models.Model):
-    """Произведение."""
+    """Произведения."""
+
     name = models.CharField(
-        verbose_name='Наименование',
         max_length=256,
+        verbose_name="Название"
     )
-    year = models.SmallIntegerField(
-        verbose_name='Год',
-        validators=[validate_year],
+    year = models.IntegerField(
+        verbose_name='Год выпуска'
+    )
+    description = models.TextField(
+        verbose_name='Описание'
     )
     genre = models.ManyToManyField(
         Genre,
-        through='GenreTitle',
-        through_fields=('title', 'genre'),
+        verbose_name='Жанр',
+        related_name='titles',
     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
+        verbose_name='Категория',
         related_name='titles',
-    )
-    description = models.TextField(
-        verbose_name='Описание',
-        blank=True,
         null=True
     )
-
-    class Meta:
-        verbose_name = 'Произведение'
-        verbose_name_plural = 'Произведения'
 
 
 class GenreTitle(models.Model):
-    """Промежуточная таблица для связи жанра и произведения."""
-    title = models.ForeignKey(
-        Title,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True
-    )
+    """Связь между жанром и произведением."""
+
     genre = models.ForeignKey(
         Genre,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True
+        on_delete=models.CASCADE,
+        verbose_name='Жанр'
+    )
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name='Произведение'
     )
 
 

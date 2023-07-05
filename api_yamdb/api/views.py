@@ -2,23 +2,31 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, status, viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status, viewsets, mixins
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
 
-from reviews.models import Title, Review
-from users.permissions import IsAuthorModeratorAdminOrReadOnly
-from .permissions import (IsAdmin,)
-from .serializers import (CustomUserSerializer,
-                          ProfileEditSerializer,
-                          SignUpSerializer,
-                          TokenSerializer, ReviewSerializer, CommentSerializer)
+
+from .filters import TitleFilter
+from .permissions import (IsAdmin, IsAdminOrReadOnly,
+                          IsAuthorModeratorAdminOrReadOnly)
+from .serializers import (
+    CustomUserSerializer,
+    ProfileEditSerializer,
+    SignUpSerializer,
+    TokenSerializer,
+    CategorySerializer,
+    GenreSerializer,
+    TitleSerializer,
+    ReadOnlyTitleSerializer,
+    ReviewSerializer, CommentSerializer)
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 from users.models import User
+from reviews.models import Category, Genre, Title, Review
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -85,7 +93,47 @@ def token(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ReviewViewSet(ModelViewSet):
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.ListModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
+    """Вьюсет для создания обьектов "Категории"."""
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly, )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+
+class GenreViewSet(mixins.CreateModelMixin,
+                   mixins.ListModelMixin,
+                   mixins.DestroyModelMixin,
+                   viewsets.GenericViewSet):
+    """Вьюсет для создания обьектов "Жанры"."""
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly, )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    """Вьюсет для создания обьектов "Произведения"."""
+    serializer_class = TitleSerializer
+    queryset = Title.objects.all()
+    permission_classes = (IsAdminOrReadOnly, )
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TitleFilter
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ReadOnlyTitleSerializer
+        return TitleSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
     """Для работы с отзывами."""
     serializer_class = ReviewSerializer
     permission_classes = [
@@ -102,7 +150,7 @@ class ReviewViewSet(ModelViewSet):
         serializer.save(author=self.request.user, title=title)
 
 
-class CommentViewSet(ModelViewSet):
+class CommentViewSet(viewsets.ModelViewSet):
     """Для работы с комментами."""
     serializer_class = CommentSerializer
     permission_classes = [
