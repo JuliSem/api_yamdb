@@ -1,9 +1,11 @@
-# под вопросом всё переместится в reviews/models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from api.validators import validate_username
+
 
 class User(AbstractUser):
+    """Модель пользователя."""
     USER = 'user'
     ADMIN = 'admin'
     MODERATOR = 'moderator'
@@ -14,6 +16,7 @@ class User(AbstractUser):
         (MODERATOR, 'Модератор')
     )
     username = models.CharField(verbose_name='Пользователь',
+                                validators=(validate_username,),
                                 max_length=150,
                                 unique=True)
     first_name = models.CharField(verbose_name='Имя',
