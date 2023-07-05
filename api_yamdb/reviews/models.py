@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.core.validators import RegexValidator
+
 
 class Category(models.Model):
     """Категории."""
@@ -10,7 +12,11 @@ class Category(models.Model):
     )
     slug = models.SlugField(
         max_length=50,
-        unique=True
+        unique=True,
+        validators=[RegexValidator(
+            regex=r'^[-a-zA-Z0-9_]+$',
+            message='В слаге категории указан недопустимый символ'
+        )]
     )
 
 
@@ -23,7 +29,11 @@ class Genre(models.Model):
     )
     slug = models.SlugField(
         max_length=50,
-        unique=True
+        unique=True,
+        validators=[RegexValidator(
+            regex=r'^[-a-zA-Z0-9_]+$',
+            message='В слаге жанра указан недопустимый символ'
+        )]
     )
 
 
