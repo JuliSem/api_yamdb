@@ -8,11 +8,12 @@ class Category(models.Model):
     """Категория."""
     name = models.CharField(
         verbose_name='Наименование',
-        max_length=200
+        max_length=254,
     )
     slug = models.SlugField(
         verbose_name='URL slug',
-        unique=True
+        unique=True,
+        max_length=50,
     )
 
     class Meta:
@@ -27,11 +28,12 @@ class Genre(models.Model):
     """Жанр"""
     name = models.CharField(
         verbose_name='Наименование',
-        max_length=200
+        max_length=254,
     )
     slug = models.SlugField(
         verbose_name='URL slug',
-        unique=True
+        unique=True,
+        max_length=50,
     )
 
     class Meta:
@@ -46,7 +48,7 @@ class Title(models.Model):
     """Произведение."""
     name = models.CharField(
         verbose_name='Наименование',
-        max_length=200
+        max_length=256,
     )
     year = models.SmallIntegerField(
         verbose_name='Год',
