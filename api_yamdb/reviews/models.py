@@ -64,6 +64,12 @@ class Title(models.Model):
         null=True
     )
 
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+        # Т.к. используем паджинатор, иначе получим
+        ordering = ['-id']
+
 
 class GenreTitle(models.Model):
     """Связь между жанром и произведением."""
