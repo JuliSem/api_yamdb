@@ -1,6 +1,7 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db import IntegrityError
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets, mixins
@@ -126,6 +127,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly, )
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
+    queryset = Title.objects.all().annotate(rating=Avg('reviews__score'))
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -161,13 +163,11 @@ class CommentViewSet(viewsets.ModelViewSet):
         title__id = self.kwargs.get('title_id')
         review_id = self.kwargs.get('review_id')
 
-        review = get_object_or_404(Review, title__id=title__id,
-                                   review_id=review_id)
+        review = get_object_or_404(Review, title__id=title__id, id=review_id)
         serializer.save(author=self.request.user, review=review)
 
     def get_queryset(self):
         title__id = self.kwargs.get('title_id')
         review_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, title__id=title__id,
-                                   review_id=review_id)
+        review = get_object_or_404(Review, title__id=title__id, id=review_id)
         return review.comments.all()
