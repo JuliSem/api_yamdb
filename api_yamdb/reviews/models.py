@@ -20,6 +20,12 @@ class Category(models.Model):
         )]
     )
 
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+        # Т.к. используем паджинатор, иначе получим
+        ordering = ['-id']
+
 
 class Genre(models.Model):
     """Жанры."""
@@ -36,6 +42,12 @@ class Genre(models.Model):
             message='В слаге жанра указан недопустимый символ'
         )]
     )
+
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+        # Т.к. используем паджинатор, иначе получим
+        ordering = ['-id']
 
 
 class Title(models.Model):
