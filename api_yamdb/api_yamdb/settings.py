@@ -119,3 +119,5 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 DEFAULT_FROM_EMAIL = 'from@example.com'
 
 AUTH_USER_MODEL = 'users.User'
+
+CSV_FILES_DIR = os.path.join(BASE_DIR, 'static/data')
