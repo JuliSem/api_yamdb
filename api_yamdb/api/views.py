@@ -13,8 +13,10 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 
 from .filters import TitleFilter
-from .permissions import (IsAdmin, IsAdminOrReadOnly,
-                          IsAuthorModeratorAdminOrReadOnly)
+from .permissions import (
+    IsAdmin,
+    IsAdminOrReadOnly,
+    IsAuthorModeratorAdminOrReadOnly)
 from .serializers import (
     CustomUserSerializer,
     ProfileEditSerializer,
@@ -24,7 +26,8 @@ from .serializers import (
     GenreSerializer,
     TitleSerializer,
     ReadOnlyTitleSerializer,
-    ReviewSerializer, CommentSerializer)
+    ReviewSerializer,
+    CommentSerializer)
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 from users.models import User
 from reviews.models import Category, Genre, Title, Review
@@ -127,7 +130,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly, )
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
-    queryset = Title.objects.all().annotate(
+    queryset = Title.objects.annotate(
         rating=Avg('reviews__score')).order_by('id')
 
     def get_serializer_class(self):

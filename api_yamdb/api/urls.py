@@ -8,7 +8,8 @@ from .views import (
     UserViewSet,
     signup,
     token,
-    ReviewViewSet, CommentViewSet)
+    ReviewViewSet,
+    CommentViewSet)
 
 auth_patterns = [
     path('signup/', signup, name='signup'),
