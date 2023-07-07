@@ -6,7 +6,7 @@ from datetime import datetime
 
 from .validators import validate_username
 from users.models import User
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review, Comment
 
 
 class SignUpSerializer(serializers.Serializer):
@@ -102,3 +102,39 @@ class TitleSerializer(serializers.ModelSerializer):
                 'Значение года не может быть больше текущего!'
             )
         return value
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """Сериалайзер для отзывы."""
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True
+    )
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        model = Review
+
+    def validate(self, data):
+        request = self.context['request']
+        if request.method == 'PATCH':
+            return data
+
+        user = self.context['request'].user
+        title_id = request.parser_context['kwargs']['title_id']
+
+        if Review.objects.filter(author=user, title__id=title_id).exists():
+            raise serializers.ValidationError(
+                'Вы уже оставили отзыв на данное произведение'
+            )
+        return data
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Сериалайзер для коммента."""
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True
+    )
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'pub_date',)
+        model = Comment
