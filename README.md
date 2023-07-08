@@ -48,6 +48,12 @@ pip install -r requirements.txt
 python3 manage.py migrate
 ```
 
+Выполнить загрузку первичных данных:
+
+```
+python3 manage.py import_csv
+```
+
 Запустить проект:
 
 ```
