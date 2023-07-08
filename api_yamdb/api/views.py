@@ -16,7 +16,8 @@ from .filters import TitleFilter
 from .permissions import (
     IsAdmin,
     IsAdminOrReadOnly,
-    IsAuthorModeratorAdminOrReadOnly)
+    IsAuthorModeratorAdminOrReadOnly
+)
 from .serializers import (
     CustomUserSerializer,
     ProfileEditSerializer,
@@ -27,7 +28,8 @@ from .serializers import (
     TitleSerializer,
     ReadOnlyTitleSerializer,
     ReviewSerializer,
-    CommentSerializer)
+    CommentSerializer
+)
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 from users.models import User
 from reviews.models import Category, Genre, Title, Review

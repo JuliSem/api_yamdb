@@ -2,7 +2,8 @@ from django.db import models
 from django.core.validators import (
     RegexValidator,
     MinValueValidator,
-    MaxValueValidator)
+    MaxValueValidator
+)
 from django.conf import settings
 
 
@@ -25,7 +26,6 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
-        # Т.к. используем паджинатор, иначе получим
         ordering = ['-id']
 
 
@@ -48,7 +48,6 @@ class Genre(models.Model):
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
-        # Т.к. используем паджинатор, иначе получим
         ordering = ['-id']
 
 
@@ -81,7 +80,6 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-        # Т.к. используем паджинатор, иначе получим
         ordering = ['-id']
 
 
@@ -129,9 +127,7 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
-        # Отзываы нужны сортированные по дате публикации.
         ordering = ['-pub_date']
-        # Один отзыв для одного автора, не более.
         unique_together = ('author', 'title')
 
     def __str__(self):
@@ -159,7 +155,6 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        # Комменты тоже нужны по дате пуликации.
         ordering = ['-pub_date']
 
     def __str__(self):

@@ -13,9 +13,10 @@ from reviews.models import (
 )
 from users.models import User
 
+
 def import_user():
     csv_path = os.path.join(CSV_FILES_DIR, 'users.csv')
-   
+
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -29,6 +30,7 @@ def import_user():
                 last_name=row['last_name'],
             )
 
+
 def import_genge():
     csv_path = os.path.join(CSV_FILES_DIR, 'genre.csv')
 
@@ -40,6 +42,7 @@ def import_genge():
                 name=row['name'],
             )
 
+
 def import_category():
     csv_path = os.path.join(CSV_FILES_DIR, 'category.csv')
 
@@ -50,6 +53,7 @@ def import_category():
                 slug=row['slug'],
                 name=row['name'],
             )
+
 
 def import_title():
     csv_path = os.path.join(CSV_FILES_DIR, 'titles.csv')
@@ -64,17 +68,6 @@ def import_title():
                 category=Category.objects.filter(id=row['category']).first(),
             )
 
-def import_genre_title():
-    csv_path = os.path.join(CSV_FILES_DIR, 'genre_title.csv')
-
-    with open(csv_path) as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            GenreTitle.objects.create(
-                id=row['id'],
-                genre=Genre.objects.filter(id=row['genre_id']).first(),
-                title=Title.objects.filter(id=row['title_id']).first(),
-            )
 
 def import_genre_title():
     csv_path = os.path.join(CSV_FILES_DIR, 'genre_title.csv')
@@ -87,6 +80,20 @@ def import_genre_title():
                 genre=Genre.objects.filter(id=row['genre_id']).first(),
                 title=Title.objects.filter(id=row['title_id']).first(),
             )
+
+
+def import_genre_title():
+    csv_path = os.path.join(CSV_FILES_DIR, 'genre_title.csv')
+
+    with open(csv_path) as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            GenreTitle.objects.create(
+                id=row['id'],
+                genre=Genre.objects.filter(id=row['genre_id']).first(),
+                title=Title.objects.filter(id=row['title_id']).first(),
+            )
+
 
 def import_review():
     csv_path = os.path.join(CSV_FILES_DIR, 'review.csv')
@@ -102,6 +109,7 @@ def import_review():
                 score=row['score'],
                 pub_date=row['pub_date'],
             )
+
 
 def import_comment():
     csv_path = os.path.join(CSV_FILES_DIR, 'comments.csv')
