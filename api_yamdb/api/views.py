@@ -30,6 +30,7 @@ from .serializers import (
     ReviewSerializer,
     CommentSerializer
 )
+from .mixins import ReviewViewSet
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 from users.models import User
 from reviews.models import Category, Genre, Title, Review
@@ -99,30 +100,16 @@ def token(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CategoryViewSet(mixins.CreateModelMixin,
-                      mixins.ListModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class CategoryViewSet(ReviewViewSet):
     """Вьюсет для создания обьектов "Категории"."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly, )
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 
-class GenreViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.DestroyModelMixin,
-                   viewsets.GenericViewSet):
+class GenreViewSet(ReviewViewSet):
     """Вьюсет для создания обьектов "Жанры"."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrReadOnly, )
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):

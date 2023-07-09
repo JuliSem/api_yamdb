@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = get_random_secret_key()
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -121,3 +121,8 @@ DEFAULT_FROM_EMAIL = 'from@example.com'
 AUTH_USER_MODEL = 'users.User'
 
 CSV_FILES_DIR = os.path.join(BASE_DIR, 'static/data')
+
+LIST_PER_PAGE = 10
+
+NAME_MAX_LENGHT = 256
+SLUG_MAX_LENGHT = 50

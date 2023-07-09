@@ -1,7 +1,7 @@
 import csv
 import os
 from django.core.management.base import BaseCommand
-from api_yamdb.settings import CSV_FILES_DIR
+from api_yamdb import settings
 
 from reviews.models import (
     Category,
@@ -15,7 +15,7 @@ from users.models import User
 
 
 def import_user():
-    csv_path = os.path.join(CSV_FILES_DIR, 'users.csv')
+    csv_path = os.path.join(settings.CSV_FILES_DIR, 'users.csv')
 
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
@@ -32,7 +32,7 @@ def import_user():
 
 
 def import_genge():
-    csv_path = os.path.join(CSV_FILES_DIR, 'genre.csv')
+    csv_path = os.path.join(settings.CSV_FILES_DIR, 'genre.csv')
 
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
@@ -44,7 +44,7 @@ def import_genge():
 
 
 def import_category():
-    csv_path = os.path.join(CSV_FILES_DIR, 'category.csv')
+    csv_path = os.path.join(settings.CSV_FILES_DIR, 'category.csv')
 
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
@@ -56,7 +56,7 @@ def import_category():
 
 
 def import_title():
-    csv_path = os.path.join(CSV_FILES_DIR, 'titles.csv')
+    csv_path = os.path.join(settings.CSV_FILES_DIR, 'titles.csv')
 
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
@@ -70,7 +70,7 @@ def import_title():
 
 
 def import_genre_title():
-    csv_path = os.path.join(CSV_FILES_DIR, 'genre_title.csv')
+    csv_path = os.path.join(settings.CSV_FILES_DIR, 'genre_title.csv')
 
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
@@ -83,7 +83,7 @@ def import_genre_title():
 
 
 def import_genre_title():
-    csv_path = os.path.join(CSV_FILES_DIR, 'genre_title.csv')
+    csv_path = os.path.join(settings.CSV_FILES_DIR, 'genre_title.csv')
 
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
@@ -96,7 +96,7 @@ def import_genre_title():
 
 
 def import_review():
-    csv_path = os.path.join(CSV_FILES_DIR, 'review.csv')
+    csv_path = os.path.join(settings.CSV_FILES_DIR, 'review.csv')
 
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
@@ -112,7 +112,7 @@ def import_review():
 
 
 def import_comment():
-    csv_path = os.path.join(CSV_FILES_DIR, 'comments.csv')
+    csv_path = os.path.join(settings.CSV_FILES_DIR, 'comments.csv')
 
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
