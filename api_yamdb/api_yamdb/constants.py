@@ -10,3 +10,8 @@ NAME_MAX_LENGTH = 256
 # Ограничение имени, при выводе в методах str.
 RESTRICT_NAME = 22
 
+USER_MAX_LENGTH = 150
+
+EMAIL_MAX_LENGTH = 254
+
+ROLE_MAX_LENGTH = 50
