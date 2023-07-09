@@ -60,9 +60,7 @@ class TitleAdmin(admin.ModelAdmin):
         'year',
         'description',
         'category',
-        'get_genre',
-        'count_reviews',
-        'get_rating'
+        'count_reviews'
     )
     empty_value_display = '-пусто-'
     list_filter = ('name',)
