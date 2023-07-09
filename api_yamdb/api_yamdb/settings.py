@@ -121,3 +121,9 @@ DEFAULT_FROM_EMAIL = 'from@example.com'
 AUTH_USER_MODEL = 'users.User'
 
 CSV_FILES_DIR = os.path.join(BASE_DIR, 'static/data')
+
+USER_MAX_LENGTH = 150
+
+EMAIL_MAX_LENGTH = 254
+
+ROLE_MAX_LENGTH = 50
