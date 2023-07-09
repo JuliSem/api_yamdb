@@ -107,10 +107,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field='username', read_only=True
     )
 
-    class Meta:
-        fields = ('id', 'text', 'author', 'score', 'pub_date')
-        model = Review
-
     def validate(self, data):
         request = self.context['request']
         if request.method == 'PATCH':
@@ -124,6 +120,10 @@ class ReviewSerializer(serializers.ModelSerializer):
                 'Вы уже оставили отзыв на данное произведение'
             )
         return data
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        model = Review
 
 
 class CommentSerializer(serializers.ModelSerializer):

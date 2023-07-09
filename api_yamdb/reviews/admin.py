@@ -9,7 +9,6 @@ admin.site.register(Comment)
 admin.site.register(Review)
 
 
-admin.site.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     """Класс настройки раздела категорий."""
 
@@ -25,7 +24,9 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
-admin.site.register(Genre)
+admin.site.register(Category, CategoryAdmin)
+
+
 class GenreAdmin(admin.ModelAdmin):
     """Класс настройки раздела жанров."""
 
@@ -41,13 +42,15 @@ class GenreAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
+admin.site.register(Genre, GenreAdmin)
+
+
 class GenreshipInline(admin.TabularInline):
     """Класс для получения списка жанров."""
 
     model = Title.genre.through
 
 
-admin.site.register(Title)
 class TitleAdmin(admin.ModelAdmin):
     """Класс настройки раздела произведений."""
 
@@ -73,3 +76,6 @@ class TitleAdmin(admin.ModelAdmin):
         return object.reviews.count()
 
     count_reviews.short_description = 'Количество отзывов'
+
+
+admin.site.register(Title, TitleAdmin)
