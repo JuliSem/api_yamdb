@@ -5,20 +5,21 @@ from django.core.validators import (
     MaxValueValidator
 )
 from django.conf import settings
+from datetime import datetime
 
 from api_yamdb.constants import (MIN_SCORE, MAX_SCORE, NAME_MAX_LENGTH,
                                  RESTRICT_NAME)
 
 
-class Category(models.Model):
-    """Категории."""
+class ModelCategoryOrGenre(models.Model):
+    """Абстрактная модель для жанров и категорий"""
 
     name = models.CharField(
-        max_length=256,
+        max_length=settings.NAME_MAX_LENGHT,
         verbose_name="Название"
     )
     slug = models.SlugField(
-        max_length=50,
+        max_length=settings.SLUG_MAX_LENGHT,
         unique=True,
         validators=[RegexValidator(
             regex=r'^[-a-zA-Z0-9_]+$',
@@ -27,34 +28,27 @@ class Category(models.Model):
     )
 
     class Meta:
+        abstract = True
+
+class Category(ModelCategoryOrGenre):
+    """Категории."""
+
+    class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
-        ordering = ['-id']
+        ordering = ('id',)
 
     def __str__(self):
         return self.name[:RESTRICT_NAME]
 
 
-class Genre(models.Model):
+class Genre(ModelCategoryOrGenre):
     """Жанры."""
-
-    name = models.CharField(
-        max_length=256,
-        verbose_name="Название"
-    )
-    slug = models.SlugField(
-        max_length=50,
-        unique=True,
-        validators=[RegexValidator(
-            regex=r'^[-a-zA-Z0-9_]+$',
-            message='В слаге жанра указан недопустимый символ'
-        )]
-    )
 
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
-        ordering = ['-id']
+        ordering = ('id',)
 
     def __str__(self):
         return self.name[:RESTRICT_NAME]
@@ -64,11 +58,21 @@ class Title(models.Model):
     """Произведения."""
 
     name = models.CharField(
-        max_length=NAME_MAX_LENGTH,
+        max_length=settings.NAME_MAX_LENGHT,
         verbose_name="Название"
     )
-    year = models.PositiveSmallIntegerField(
-        verbose_name='Год выпуска'
+    year = models.PositiveIntegerField(
+        verbose_name='Год выпуска',
+        validators=[
+            MinValueValidator(
+                0,
+                message='Значение года не может быть отрицательным'
+            ),
+            MaxValueValidator(
+                int(datetime.now().year),
+                message='Значение года не может быть больше текущего'
+            )
+        ],
     )
     description = models.TextField(
         verbose_name='Описание'
@@ -89,7 +93,6 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-        ordering = ('-id', )
 
     def __str__(self):
         return self.name[:RESTRICT_NAME]

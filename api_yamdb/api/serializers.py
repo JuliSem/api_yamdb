@@ -2,7 +2,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
-from datetime import datetime
 
 from .validators import validate_username
 from users.models import User
@@ -94,14 +93,12 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = '__all__'
+        fields = ('name', 'year', 'description', 'genre', 'category')
 
-    def validate_year(self, value):
-        if value > int(datetime.now().year):
-            raise serializers.ValidationError(
-                'Значение года не может быть больше текущего!'
-            )
-        return value
+    def to_representation(self, title):
+        """Определяет какой сериализатор будет использоваться для чтения."""
+        serializer = ReadOnlyTitleSerializer(title)
+        return serializer.data
 
 
 class ReviewSerializer(serializers.ModelSerializer):
