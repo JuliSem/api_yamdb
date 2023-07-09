@@ -6,6 +6,9 @@ from django.core.validators import (
 )
 from django.conf import settings
 
+from api_yamdb.constants import (MIN_SCORE, MAX_SCORE, NAME_MAX_LENGTH,
+                                 RESTRICT_NAME)
+
 
 class Category(models.Model):
     """Категории."""
@@ -27,6 +30,9 @@ class Category(models.Model):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
         ordering = ['-id']
+
+    def __str__(self):
+        return self.name[:RESTRICT_NAME]
 
 
 class Genre(models.Model):
@@ -50,15 +56,18 @@ class Genre(models.Model):
         verbose_name_plural = 'Жанры'
         ordering = ['-id']
 
+    def __str__(self):
+        return self.name[:RESTRICT_NAME]
+
 
 class Title(models.Model):
     """Произведения."""
 
     name = models.CharField(
-        max_length=256,
+        max_length=NAME_MAX_LENGTH,
         verbose_name="Название"
     )
-    year = models.IntegerField(
+    year = models.PositiveSmallIntegerField(
         verbose_name='Год выпуска'
     )
     description = models.TextField(
@@ -80,7 +89,10 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-        ordering = ['-id']
+        ordering = ('-id', )
+
+    def __str__(self):
+        return self.name[:RESTRICT_NAME]
 
 
 class GenreTitle(models.Model):
@@ -98,25 +110,32 @@ class GenreTitle(models.Model):
     )
 
 
-class Review(models.Model):
+class CreateMixin(models.Model):
+    """Добавляет к модели дату публикации."""
+    pub_date = models.DateTimeField(
+        verbose_name='Дата публикации',
+        auto_now_add=True,
+        db_index=True,
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Review(CreateMixin):
     """Отзыв."""
     text = models.TextField(verbose_name='Текст')
     score = models.PositiveSmallIntegerField(
         verbose_name='Оценка',
         validators=[
-            MinValueValidator(1, 'Оценка не может быть меньше 1'),
-            MaxValueValidator(10, 'Оценка не может быть выше 10')
+            MinValueValidator(MIN_SCORE, 'Оценка не может быть меньше 1'),
+            MaxValueValidator(MAX_SCORE, 'Оценка не может быть выше 10')
         ]
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='reviews',
-    )
-    pub_date = models.DateTimeField(
-        verbose_name='Дата публикации',
-        auto_now_add=True,
-        db_index=True,
     )
     title = models.ForeignKey(
         Title,
@@ -127,14 +146,14 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
-        ordering = ['-pub_date']
+        ordering = ('-pub_date', )
         unique_together = ('author', 'title')
 
     def __str__(self):
         return f'{self.title}, {self.score}, {self.author}'
 
 
-class Comment(models.Model):
+class Comment(CreateMixin):
     """Комментарий."""
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -147,15 +166,11 @@ class Comment(models.Model):
         related_name='comments'
     )
     text = models.TextField(verbose_name='Текст комментария')
-    pub_date = models.DateTimeField(
-        verbose_name='Дата комментария',
-        auto_now_add=True,
-    )
 
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        ordering = ['-pub_date']
+        ordering = ('-pub_date', )
 
     def __str__(self):
         return f'{self.author}, {self.pub_date}: {self.text}'
