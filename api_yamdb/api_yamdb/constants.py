@@ -7,6 +7,8 @@ MAX_SCORE = 10
 # Максимальная длина имен в моделях.
 NAME_MAX_LENGTH = 256
 
+SLUG_MAX_LENGTH = 50
+
 # Ограничение имени, при выводе в методах str.
 RESTRICT_NAME = 22
 

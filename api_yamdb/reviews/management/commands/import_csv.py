@@ -6,17 +6,24 @@ from api_yamdb import settings
 from reviews.models import (
     Category,
     Genre,
-    GenreTitle,
     Review,
     Comment,
     Title
 )
 from users.models import User
 
+FILES = (
+    'users',
+    'genre',
+    'category',
+    'titles',
+    'genre_title',
+    'review',
+    'comments'
+)
 
-def import_user():
-    csv_path = os.path.join(settings.CSV_FILES_DIR, 'users.csv')
 
+def import_users(csv_path):
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -31,9 +38,7 @@ def import_user():
             )
 
 
-def import_genge():
-    csv_path = os.path.join(settings.CSV_FILES_DIR, 'genre.csv')
-
+def import_genre(csv_path):
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -43,9 +48,7 @@ def import_genge():
             )
 
 
-def import_category():
-    csv_path = os.path.join(settings.CSV_FILES_DIR, 'category.csv')
-
+def import_category(csv_path):
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -55,9 +58,7 @@ def import_category():
             )
 
 
-def import_title():
-    csv_path = os.path.join(settings.CSV_FILES_DIR, 'titles.csv')
-
+def import_titles(csv_path):
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -69,35 +70,16 @@ def import_title():
             )
 
 
-def import_genre_title():
-    csv_path = os.path.join(settings.CSV_FILES_DIR, 'genre_title.csv')
-
+def import_genre_title(csv_path):
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            GenreTitle.objects.create(
-                id=row['id'],
-                genre=Genre.objects.filter(id=row['genre_id']).first(),
-                title=Title.objects.filter(id=row['title_id']).first(),
-            )
+            title = Title.objects.get(id=row['title_id']),
+            title = title[0]
+            title.genre.add(row['genre_id'])
 
 
-def import_genre_title():
-    csv_path = os.path.join(settings.CSV_FILES_DIR, 'genre_title.csv')
-
-    with open(csv_path) as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            GenreTitle.objects.create(
-                id=row['id'],
-                genre=Genre.objects.filter(id=row['genre_id']).first(),
-                title=Title.objects.filter(id=row['title_id']).first(),
-            )
-
-
-def import_review():
-    csv_path = os.path.join(settings.CSV_FILES_DIR, 'review.csv')
-
+def import_review(csv_path):
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -111,9 +93,7 @@ def import_review():
             )
 
 
-def import_comment():
-    csv_path = os.path.join(settings.CSV_FILES_DIR, 'comments.csv')
-
+def import_comments(csv_path):
     with open(csv_path) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -130,11 +110,8 @@ class Command(BaseCommand):
     help = 'Imports data from a CSV file into the YourModel model'
 
     def handle(self, *args, **options):
-        import_user()
-        import_genge()
-        import_category()
-        import_title()
-        import_genre_title()
-        import_review()
-        import_comment()
+        for file in FILES:
+            csv_path = os.path.join(settings.CSV_FILES_DIR, f'{file}.csv')
+            eval(f'import_{file}(\'{csv_path}\')')
+
         self.stdout.write(self.style.SUCCESS('Data imported successfully'))

@@ -123,6 +123,3 @@ AUTH_USER_MODEL = 'users.User'
 CSV_FILES_DIR = os.path.join(BASE_DIR, 'static/data')
 
 LIST_PER_PAGE = 10
-
-NAME_MAX_LENGHT = 256
-SLUG_MAX_LENGHT = 50

@@ -7,19 +7,25 @@ from django.core.validators import (
 from django.conf import settings
 from datetime import datetime
 
-from api_yamdb.constants import (MIN_SCORE, MAX_SCORE, NAME_MAX_LENGTH,
-                                 RESTRICT_NAME)
+
+from api_yamdb.constants import (
+    MIN_SCORE,
+    MAX_SCORE,
+    NAME_MAX_LENGTH,
+    SLUG_MAX_LENGTH,
+    RESTRICT_NAME
+)
 
 
 class ModelCategoryOrGenre(models.Model):
     """Абстрактная модель для жанров и категорий"""
 
     name = models.CharField(
-        max_length=settings.NAME_MAX_LENGHT,
+        max_length=NAME_MAX_LENGTH,
         verbose_name="Название"
     )
     slug = models.SlugField(
-        max_length=settings.SLUG_MAX_LENGHT,
+        max_length=SLUG_MAX_LENGTH,
         unique=True,
         validators=[RegexValidator(
             regex=r'^[-a-zA-Z0-9_]+$',
@@ -29,6 +35,7 @@ class ModelCategoryOrGenre(models.Model):
 
     class Meta:
         abstract = True
+
 
 class Category(ModelCategoryOrGenre):
     """Категории."""
@@ -58,7 +65,7 @@ class Title(models.Model):
     """Произведения."""
 
     name = models.CharField(
-        max_length=settings.NAME_MAX_LENGHT,
+        max_length=NAME_MAX_LENGTH,
         verbose_name="Название"
     )
     year = models.PositiveIntegerField(
@@ -96,21 +103,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name[:RESTRICT_NAME]
-
-
-class GenreTitle(models.Model):
-    """Связь между жанром и произведением."""
-
-    genre = models.ForeignKey(
-        Genre,
-        on_delete=models.CASCADE,
-        verbose_name='Жанр'
-    )
-    title = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        verbose_name='Произведение'
-    )
 
 
 class CreateMixin(models.Model):

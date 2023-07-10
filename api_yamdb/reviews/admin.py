@@ -44,12 +44,6 @@ class GenreAdmin(admin.ModelAdmin):
 admin.site.register(Genre, GenreAdmin)
 
 
-class GenreshipInline(admin.TabularInline):
-    """Класс для получения списка жанров."""
-
-    model = Title.genre.through
-
-
 class TitleAdmin(admin.ModelAdmin):
     """Класс настройки раздела произведений."""
 
@@ -59,6 +53,7 @@ class TitleAdmin(admin.ModelAdmin):
         'year',
         'description',
         'category',
+        'get_genre',
         'count_reviews'
     )
     empty_value_display = '-пусто-'
@@ -66,7 +61,12 @@ class TitleAdmin(admin.ModelAdmin):
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('name', 'year', 'category')
     list_editable = ('category',)
-    inlines = (GenreshipInline,)
+
+    def get_genre(self, object):
+        """Получает жанр или список жанров произведения."""
+        return '\n'.join((genre.name for genre in object.genre.all()))
+
+    get_genre.short_description = 'Жанр/ы произведения'
 
     def count_reviews(self, object):
         """Вычисляет количество отзывов на произведение."""
